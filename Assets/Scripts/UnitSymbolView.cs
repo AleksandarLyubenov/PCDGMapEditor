@@ -5,6 +5,9 @@ using TMPro;
 [RequireComponent(typeof(LineRenderer))]
 public class UnitSymbolView : MonoBehaviour
 {
+    [Header("Materials")]
+    public Material lineMaterialTemplate;
+
     public TextMeshPro textTop;
     public TextMeshPro textCenter;
     public TextMeshPro textBottom;
@@ -60,27 +63,44 @@ public class UnitSymbolView : MonoBehaviour
 
     private void ConfigureLineRenderer()
     {
+        if (lineRenderer == null)
+            lineRenderer = GetComponent<LineRenderer>();
         if (lineRenderer == null) return;
 
         lineRenderer.useWorldSpace = false;
         lineRenderer.loop = true;
         lineRenderer.startWidth = lineRenderer.endWidth = lineThickness;
 
-        // Create an instance material so each unit can have its own color
-        if (lineRenderer.material == null)
+        if (Application.isPlaying)
         {
-            if (lineRenderer.sharedMaterial != null)
+            // RUNTIME: each symbol gets its own instance so colors are independent
+            if (lineRenderer.material == null ||
+                (lineMaterialTemplate != null && lineRenderer.material.shader != lineMaterialTemplate.shader))
             {
-                lineRenderer.material = new Material(lineRenderer.sharedMaterial);
+                Material baseMat = lineMaterialTemplate != null
+                    ? lineMaterialTemplate
+                    : lineRenderer.sharedMaterial;
+
+                if (baseMat == null)
+                {
+                    // very last fallback, but only in play mode
+                    baseMat = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+                    baseMat.color = Color.white;
+                }
+
+                lineRenderer.material = new Material(baseMat);
             }
-            else
+        }
+        else
+        {
+            // EDITOR: only use sharedMaterial; no runtime instances
+            if (lineRenderer.sharedMaterial == null && lineMaterialTemplate != null)
             {
-                var mat = new Material(Shader.Find("Sprites/Default"));
-                mat.color = Color.white;
-                lineRenderer.material = mat;
+                lineRenderer.sharedMaterial = lineMaterialTemplate;
             }
         }
     }
+
 
 
     // ---------- Public API ----------
@@ -142,15 +162,14 @@ public class UnitSymbolView : MonoBehaviour
         }
 
         if (isSelected)
-        {
-            // simple highlight instead of multiplying to mud-brown
             baseColor = Color.Lerp(baseColor, selectedTint, 0.5f);
-        }
 
         lineRenderer.startColor = lineRenderer.endColor = baseColor;
-        if (lineRenderer.material != null)
+
+        if (Application.isPlaying && lineRenderer.material != null)
             lineRenderer.material.color = baseColor;
     }
+
 
 
     // ---------- Frame geometry ----------

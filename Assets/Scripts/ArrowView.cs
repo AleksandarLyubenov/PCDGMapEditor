@@ -3,6 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class ArrowView : MonoBehaviour
 {
+    [Header("Material")]
+    public Material arrowMaterialTemplate;
+
     public float lineWidth = 0.08f;
     public float headLength = 0.7f;
     public float headAngle = 25f;
@@ -17,13 +20,27 @@ public class ArrowView : MonoBehaviour
         lr.loop = false;
         lr.startWidth = lr.endWidth = lineWidth;
 
-        if (lr.sharedMaterial == null)
+        // Use the template material so builds always have a valid shader
+        if (Application.isPlaying)
         {
-            var mat = new Material(Shader.Find("Sprites/Default"));
-            mat.color = Color.white;
-            lr.sharedMaterial = mat;
+            if (arrowMaterialTemplate != null)
+            {
+                lr.material = new Material(arrowMaterialTemplate);
+            }
+            else if (lr.material == null)
+            {
+                lr.material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+            }
+        }
+        else
+        {
+            if (lr.sharedMaterial == null && arrowMaterialTemplate != null)
+            {
+                lr.sharedMaterial = arrowMaterialTemplate;
+            }
         }
     }
+
 
     // MAIN API (used when creating & rebuilding arrows)
     public void SetArrow(Vector2 from, Vector2 to, float startOffset, float endOffset, Color color)
@@ -82,7 +99,7 @@ public class ArrowView : MonoBehaviour
         lr.SetPosition(4, head2);
 
         lr.startColor = lr.endColor = color;
-        if (lr.material != null)
+        if (Application.isPlaying && lr.material != null)
             lr.material.color = color;
     }
 }

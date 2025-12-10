@@ -356,27 +356,24 @@ public class UnitManager : MonoBehaviour
     {
         if (selectedUnit == null) return;
 
-        float startOffset = 0.5f;
-        if (selectedView != null)
-            startOffset = selectedView.GetArrowStartOffset();
-
+        float startOffset = selectedView != null ? selectedView.GetArrowStartOffset() : 0.5f;
         float endOffset = 0.3f;
+
+        Color color = AffiliationColor(selectedUnit.affiliation);
 
         ArrowData ad = new ArrowData
         {
             fromUnitId = selectedUnit.id,
             from = selectedUnit.worldPos,
-            to = target
+            to = target,
+            color = color
         };
         arrows.Add(ad);
 
         var av = Instantiate(arrowPrefab);
-        Color color = AffiliationColor(selectedUnit.affiliation);
-        av.SetArrow(ad.from, ad.to, startOffset, endOffset, color);
+        av.SetArrow(ad.from, ad.to, startOffset, endOffset, ad.color);
         arrowViews.Add(av);
     }
-
-
 
     private Color AffiliationColor(UnitAffiliation aff)
     {
@@ -388,7 +385,6 @@ public class UnitManager : MonoBehaviour
             _ => Color.white
         };
     }
-
     private void RebuildArrows()
     {
         foreach (var av in arrowViews)
@@ -402,17 +398,15 @@ public class UnitManager : MonoBehaviour
 
             float startOffset = 0.5f;
             float endOffset = 0.3f;
-            Color color = Color.white;
 
             if (views.TryGetValue(ad.fromUnitId, out var v) && v != null && v.Data != null)
             {
                 startOffset = v.GetArrowStartOffset();
-                color = AffiliationColor(v.Data.affiliation);
-                ad.from = v.Data.worldPos;          // keep data aligned
+                ad.from = v.Data.worldPos;
                 arrows[i] = ad;
             }
 
-            av.SetArrow(ad.from, ad.to, startOffset, endOffset, color);
+            av.SetArrow(ad.from, ad.to, startOffset, endOffset, ad.color);
             arrowViews.Add(av);
         }
     }

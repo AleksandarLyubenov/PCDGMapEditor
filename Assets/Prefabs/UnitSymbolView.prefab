@@ -597,7 +597,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 26f66267785376a4c9011e8148437bc7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -703,6 +703,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63c6feac172ab3d4294e604f1a3c0463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lineMaterialTemplate: {fileID: 2100000, guid: 26f66267785376a4c9011e8148437bc7, type: 2}
   textTop: {fileID: 6085973033987095592}
   textCenter: {fileID: 3297984687083688865}
   textBottom: {fileID: 3863450233129548763}

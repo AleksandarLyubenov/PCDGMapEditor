@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d56fa33ac490574cbb7b590035c305e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  arrowMaterialTemplate: {fileID: 2100000, guid: 26f66267785376a4c9011e8148437bc7, type: 2}
   lineWidth: 0.08
   headLength: 0.5
   headAngle: 25

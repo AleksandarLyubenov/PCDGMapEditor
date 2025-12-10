@@ -31,4 +31,5 @@ public class ArrowData
     public string fromUnitId;
     public Vector2 from;
     public Vector2 to;
+    public Color color;     // NEW
 }
