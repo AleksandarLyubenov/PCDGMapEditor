@@ -1,0 +1,16 @@
+{
+    "units": [
+        {
+            "id": "47408007-801d-4b76-946f-dd7378d3ec50",
+            "worldPos": {
+                "x": 74.47276306152344,
+                "y": -23.551502227783204
+            },
+            "frameType": "SEA",
+            "unitCode": "DDG",
+            "nationTop": "VARFOLD",
+            "labelBottom": "20x",
+            "importance": 255
+        }
+    ]
+}
