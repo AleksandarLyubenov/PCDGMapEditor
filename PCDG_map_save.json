@@ -1,15 +1,87 @@
 {
     "units": [
         {
-            "id": "47408007-801d-4b76-946f-dd7378d3ec50",
+            "id": "09ded08a-5d16-483f-bc77-d115f34409e5",
             "worldPos": {
-                "x": 74.47276306152344,
-                "y": -23.551502227783204
+                "x": 71.61134338378906,
+                "y": -21.62017250061035
             },
             "frameType": "SEA",
             "unitCode": "DDG",
             "nationTop": "VARFOLD",
-            "labelBottom": "20x",
+            "labelBottom": "20",
+            "importance": 255
+        },
+        {
+            "id": "c7a36872-d78c-4f15-bf2e-74c1235b8cbd",
+            "worldPos": {
+                "x": 105.88944244384766,
+                "y": -32.100852966308597
+            },
+            "frameType": "LAND",
+            "unitCode": "DDG",
+            "nationTop": "VARFOLD",
+            "labelBottom": "20",
+            "importance": 255
+        },
+        {
+            "id": "4c9d9837-61d0-4c26-8cde-0f706a56fb73",
+            "worldPos": {
+                "x": 22.181503295898439,
+                "y": -15.637534141540528
+            },
+            "frameType": "LAND",
+            "unitCode": "DDG",
+            "nationTop": "VARFOLD",
+            "labelBottom": "20",
+            "importance": 255
+        },
+        {
+            "id": "cb243f99-842d-4cab-aa1d-c3e31a9fe829",
+            "worldPos": {
+                "x": 25.5761661529541,
+                "y": -15.76151180267334
+            },
+            "frameType": "SUB",
+            "unitCode": "DDG",
+            "nationTop": "VARFOLD",
+            "labelBottom": "20",
+            "importance": 255
+        },
+        {
+            "id": "2f4bfc2d-e63f-4858-908c-0a83d18012dc",
+            "worldPos": {
+                "x": 24.77130889892578,
+                "y": -18.823169708251954
+            },
+            "frameType": "SUB",
+            "unitCode": "DDG",
+            "nationTop": "VARFOLD",
+            "labelBottom": "20",
+            "importance": 255
+        },
+        {
+            "id": "0e46c89b-71fa-45b6-b20d-b55420c8a013",
+            "worldPos": {
+                "x": 28.096027374267579,
+                "y": -18.98759651184082
+            },
+            "frameType": "LAND",
+            "unitCode": "DDG",
+            "nationTop": "VARFOLD",
+            "labelBottom": "20",
+            "importance": 255
+        },
+        {
+            "id": "515c6ab7-c5f5-4548-bc93-43520151e217",
+            "worldPos": {
+                "x": 30.690263748168947,
+                "y": -18.862186431884767
+            },
+            "frameType": "SEA",
+            "unitCode": "DDG",
+            "nationTop": "VARFOLD",
+            "labelBottom": "20",
             "importance": 255
         }
     ]
