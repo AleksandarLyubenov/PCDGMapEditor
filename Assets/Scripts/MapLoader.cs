@@ -4,7 +4,7 @@ using System.IO;
 [RequireComponent(typeof(SpriteRenderer))]
 public class MapLoader : MonoBehaviour
 {
-    public string imagePath = "map.png"; // relative to project or absolute
+    public string imagePath = "Maps/map.png"; // relative to project or absolute
 
     private void Start()
     {

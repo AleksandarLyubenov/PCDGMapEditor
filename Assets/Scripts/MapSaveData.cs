@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 
-[Serializable]
+[System.Serializable]
 public class MapSaveData
 {
-    public List<UnitData> units = new List<UnitData>();
-    // Later you can add: public List<LineData> lines;
+    public List<UnitData> units = new();
+    public List<ArrowData> arrows = new();
+    public string backgroundRelativePath;   // e.g. "Maps/map01.png"
 }

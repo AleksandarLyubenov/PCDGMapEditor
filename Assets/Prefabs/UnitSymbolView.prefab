@@ -539,10 +539,11 @@ GameObject:
   - component: {fileID: 5915921832468809263}
   - component: {fileID: 4701649471191003337}
   - component: {fileID: 190758521327039192}
-  - component: {fileID: 8141298661845822801}
+  - component: {fileID: 7105372543623833105}
   - component: {fileID: 3641908397783107999}
   - component: {fileID: 5699000079293629110}
   - component: {fileID: 4762020035119627537}
+  - component: {fileID: 3599653630199695557}
   m_Layer: 0
   m_Name: UnitSymbolView
   m_TagString: Untagged
@@ -596,7 +597,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 26f66267785376a4c9011e8148437bc7, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -630,7 +631,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.2
+        value: 0.1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -639,7 +640,7 @@ LineRenderer:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 0.2
+        value: 0.1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -708,9 +709,12 @@ MonoBehaviour:
   frameWidth: 1.5
   frameHeight: 1
   circleSegments: 24
-  lineThicknessAtBaseZoom: 0.2
-  referenceOrthoSize: 50
---- !u!114 &8141298661845822801
+  lineThickness: 0.1
+  friendlyColor: {r: 0.3915094, g: 0.7289693, b: 1, a: 1}
+  hostileColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+  neutralColor: {r: 0.2, g: 0.9, b: 0.4, a: 1}
+  selectedTint: {r: 1, g: 1, b: 0.4, a: 1}
+--- !u!114 &7105372543623833105
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -719,10 +723,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5215391764463354207}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a8bd147e3669a74fa20c57003628179, type: 3}
+  m_Script: {fileID: 11500000, guid: 96eeceff2fe0e18439b81ea962e9449b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseButton: 1
+  manager: {fileID: 0}
 --- !u!23 &3641908397783107999
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -784,3 +788,49 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5215391764463354207}
   m_CullTransparentMesh: 1
+--- !u!61 &3599653630199695557
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5215391764463354207}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0.007858276}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.5, y: 2.6037903}
+  m_EdgeRadius: 0

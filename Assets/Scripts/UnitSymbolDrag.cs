@@ -1,9 +1,9 @@
 using UnityEngine;
 
-[RequireComponent(typeof(UnitSymbolView))]
+[RequireComponent(typeof(Collider2D))] // or Collider
 public class UnitSymbolDrag : MonoBehaviour
 {
-    public int mouseButton = 1; // 1 = RMB
+    public int mouseButton = 1;  // 1 = RMB
 
     private bool dragging;
     private Vector3 offset;
@@ -34,17 +34,16 @@ public class UnitSymbolDrag : MonoBehaviour
 
     private void Update()
     {
-        if (dragging)
-        {
-            Vector3 world = camController.Cam.ScreenToWorldPoint(Input.mousePosition);
-            world.z = 0;
-            transform.position = world + offset;
+        if (!dragging || camController == null) return;
 
-            // Update underlying data position
-            if (view.Data != null)
-            {
-                view.Data.worldPos = transform.position;
-            }
-        }
+        Vector3 world = camController.Cam.ScreenToWorldPoint(Input.mousePosition);
+        world.z = 0;
+        Vector3 newPos = world + offset;
+        newPos.z = 0;
+
+        transform.position = newPos;
+
+        if (view != null && view.Data != null)
+            view.Data.worldPos = newPos;
     }
 }

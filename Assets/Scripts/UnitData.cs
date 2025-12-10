@@ -1,14 +1,34 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+
+public enum UnitAffiliation
+{
+    Friendly,
+    Hostile,
+    Neutral
+}
 
 [Serializable]
 public class UnitData
 {
-    public string id;            // unique GUID for this unit
+    public string id;
     public Vector2 worldPos;
-    public string frameType;     // "LAND", "SEA", "SUB", "AIR"
-    public string unitCode;      // e.g. "MI", "DDG", "F18"
-    public string nationTop;     // text above frame (optional)
-    public string labelBottom;   // text below frame (optional)
-    [Range(0, 255)] public byte importance;
+
+    // "LAND", "SEA", "SUB", "AIR"
+    public string frameType;
+
+    public string nationTop;
+    public string unitCode;
+    public string labelBottom;
+
+    public UnitAffiliation affiliation;
+}
+
+[System.Serializable]
+public class ArrowData
+{
+    public string fromUnitId;
+    public Vector2 from;
+    public Vector2 to;
 }

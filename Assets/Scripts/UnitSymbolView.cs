@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 
-[ExecuteAlways]   // ← this is the key line
+[ExecuteAlways]
 [RequireComponent(typeof(LineRenderer))]
 public class UnitSymbolView : MonoBehaviour
 {
@@ -10,95 +10,172 @@ public class UnitSymbolView : MonoBehaviour
     public TextMeshPro textBottom;
 
     [Header("Frame settings")]
-    public float frameWidth = 1.5f;
-    public float frameHeight = 1.0f;
-    public int circleSegments = 24;
-    public float lineThicknessAtBaseZoom = 0.05f;
-    public float referenceOrthoSize = 50f;
+    public float frameWidth = 2f;
+    public float frameHeight = 1.2f;
+    public int circleSegments = 32;
+    public float lineThickness = 0.1f;
+
+    [Header("Colors")]
+    public Color friendlyColor = new Color(0.1f, 0.6f, 1f);
+    public Color hostileColor = new Color(1f, 0.2f, 0.2f);
+    public Color neutralColor = new Color(0.2f, 0.9f, 0.4f);
+    public Color selectedTint = new Color(1f, 1f, 0.4f);
 
     private LineRenderer lineRenderer;
-    private string frameType;
-
-    private CameraController2D camController;
-    private UnitData data;
-
-    private bool isCluster = false;
-    private int clusterCount = 1;
+    private UnitData boundData;
+    private bool isSelected;
 
     private void Awake()
-    {
-        lineRenderer = GetComponent<LineRenderer>();
-
-        // In edit mode there may be no camera controller – that's fine.
-        if (!Application.isPlaying)
-        {
-            camController = null;
-        }
-        else
-        {
-            camController = FindFirstObjectByType<CameraController2D>();
-        }
-    }
-
-    private void OnEnable()
-    {
-        if (Application.isPlaying && camController == null)
-            camController = FindFirstObjectByType<CameraController2D>();
-
-        if (camController != null)
-            camController.OnViewChanged += UpdateLineThickness;
-
-        // In edit mode, show something even without data bound
-        if (!Application.isPlaying)
-            Refresh();
-    }
-
-    private void OnDisable()
-    {
-        if (camController != null)
-            camController.OnViewChanged -= UpdateLineThickness;
-    }
-
-    // Called automatically when you change values in the Inspector
-    private void OnValidate()
-    {
-        // Avoid spamming when prefab is not fully initialised
-        if (!isActiveAndEnabled) return;
-
-        Refresh();
-    }
-
-    /// <summary>
-    /// Rebuild frame + thickness. Safe to call in edit mode.
-    /// </summary>
-    public void Refresh()
     {
         if (lineRenderer == null)
             lineRenderer = GetComponent<LineRenderer>();
 
-        RebuildFrameGeometry();
-        UpdateLineThickness();
+        ConfigureLineRenderer();
     }
 
-    public void Bind(UnitData unitData, bool asCluster, int clusterSize)
+    private void OnEnable()
     {
-        data = unitData;
-        isCluster = asCluster;
-        clusterCount = clusterSize;
+        if (lineRenderer == null)
+            lineRenderer = GetComponent<LineRenderer>();
 
-        frameType = unitData.frameType;
-        if (textTop) textTop.text = unitData.nationTop;
-        if (textCenter) textCenter.text = asCluster ? unitData.unitCode + $" ({clusterSize})" : unitData.unitCode;
-        if (textBottom) textBottom.text = unitData.labelBottom;
-
-        transform.position = unitData.worldPos;
-
-        Refresh();
+        ConfigureLineRenderer();
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+            RefreshEditorPreview();
+#endif
     }
+
+    private void OnValidate()
+    {
+        if (!isActiveAndEnabled) return;
+        if (lineRenderer == null)
+            lineRenderer = GetComponent<LineRenderer>();
+
+        ConfigureLineRenderer();
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+            RefreshEditorPreview();
+#endif
+    }
+
+    private void ConfigureLineRenderer()
+    {
+        if (lineRenderer == null) return;
+
+        lineRenderer.useWorldSpace = false;
+        lineRenderer.loop = true;
+        lineRenderer.startWidth = lineRenderer.endWidth = lineThickness;
+
+        // Create an instance material so each unit can have its own color
+        if (lineRenderer.material == null)
+        {
+            if (lineRenderer.sharedMaterial != null)
+            {
+                lineRenderer.material = new Material(lineRenderer.sharedMaterial);
+            }
+            else
+            {
+                var mat = new Material(Shader.Find("Sprites/Default"));
+                mat.color = Color.white;
+                lineRenderer.material = mat;
+            }
+        }
+    }
+
+
+    // ---------- Public API ----------
+
+    public void Bind(UnitData data)
+    {
+        boundData = data;
+
+        transform.position = data.worldPos;
+
+        if (textTop) textTop.text = data.nationTop;
+        if (textCenter) textCenter.text = data.unitCode;
+        if (textBottom) textBottom.text = data.labelBottom;
+
+        RebuildFrameGeometry();
+        ApplyAffiliationColor();
+    }
+
+    public void UpdateDataFromView()
+    {
+        if (boundData == null) return;
+        boundData.worldPos = transform.position;
+        boundData.nationTop = textTop ? textTop.text : boundData.nationTop;
+        boundData.unitCode = textCenter ? textCenter.text : boundData.unitCode;
+        boundData.labelBottom = textBottom ? textBottom.text : boundData.labelBottom;
+    }
+
+    public void SetSelected(bool selected)
+    {
+        isSelected = selected;
+        ApplyAffiliationColor();
+    }
+
+    public void SetAffiliation(UnitAffiliation aff)
+    {
+        if (boundData != null)
+            boundData.affiliation = aff;
+
+        ApplyAffiliationColor();
+    }
+
+    public UnitData Data => boundData;
+
+    // ---------- Coloring ----------
+
+    private void ApplyAffiliationColor()
+    {
+        if (lineRenderer == null) return;
+
+        Color baseColor = Color.white;
+        if (boundData != null)
+        {
+            switch (boundData.affiliation)
+            {
+                case UnitAffiliation.Friendly: baseColor = friendlyColor; break;
+                case UnitAffiliation.Hostile: baseColor = hostileColor; break;
+                case UnitAffiliation.Neutral: baseColor = neutralColor; break;
+            }
+        }
+
+        if (isSelected)
+        {
+            // simple highlight instead of multiplying to mud-brown
+            baseColor = Color.Lerp(baseColor, selectedTint, 0.5f);
+        }
+
+        lineRenderer.startColor = lineRenderer.endColor = baseColor;
+        if (lineRenderer.material != null)
+            lineRenderer.material.color = baseColor;
+    }
+
+
+    // ---------- Frame geometry ----------
+
+    public void RefreshEditorPreview()
+    {
+        // Use LAND as default preview
+        BuildRectangle();
+        lineRenderer.startWidth = lineRenderer.endWidth = lineThickness;
+    }
+
+    public float GetArrowStartOffset()
+    {
+        float halfW = frameWidth * 0.5f;
+        float halfH = frameHeight * 0.5f;
+        float r = Mathf.Max(halfW, halfH);
+        return r + lineThickness * 1.5f;
+    }
+
 
     private void RebuildFrameGeometry()
     {
-        switch (frameType)
+        string type = boundData != null ? boundData.frameType : "LAND";
+
+        switch (type)
         {
             case "LAND": BuildRectangle(); break;
             case "SEA": BuildCircle(); break;
@@ -110,56 +187,53 @@ public class UnitSymbolView : MonoBehaviour
 
     private void BuildRectangle()
     {
-        Vector3[] pts = new Vector3[4];
         float w = frameWidth * 0.5f;
         float h = frameHeight * 0.5f;
 
-        pts[0] = new Vector3(-w, -h, 0);
-        pts[1] = new Vector3(-w, h, 0);
-        pts[2] = new Vector3(w, h, 0);
-        pts[3] = new Vector3(w, -h, 0);
+        Vector3[] pts =
+        {
+            new(-w, -h, 0),
+            new(-w,  h, 0),
+            new( w,  h, 0),
+            new( w, -h, 0),
+        };
 
+        lineRenderer.loop = true;
         lineRenderer.positionCount = pts.Length;
         lineRenderer.SetPositions(pts);
-        lineRenderer.loop = true;
     }
 
     private void BuildCircle()
     {
         int segs = Mathf.Max(8, circleSegments);
+        float r = frameWidth * 0.5f;
 
         lineRenderer.loop = true;
         lineRenderer.positionCount = segs;
 
-        float radius = frameWidth * 0.5f;   // wider circle
-
         for (int i = 0; i < segs; i++)
         {
             float t = (float)i / segs * Mathf.PI * 2f;
-            float x = Mathf.Cos(t) * radius;
-            float y = Mathf.Sin(t) * radius; // keep the circle circular
+            float x = Mathf.Cos(t) * r;
+            float y = Mathf.Sin(t) * r;
             lineRenderer.SetPosition(i, new Vector3(x, y, 0));
         }
     }
 
+    // U (SUB) and ∩ (AIR) using mirror trick from before
     private void BuildUSemiCircle(bool inverted)
     {
-        if (lineRenderer == null)
-            lineRenderer = GetComponent<LineRenderer>();
-
         int segs = Mathf.Max(8, circleSegments);
-        float r = frameWidth * 0.5f;      // radius from width
+        float r = frameWidth * 0.5f;
         float top = frameHeight * 0.5f;
         float midY = 0f;
 
-        // 1) Build a perfect SUBSURFACE U (open at the top) in local space.
         var pts = new System.Collections.Generic.List<Vector3>();
 
-        // left vertical: top -> mid
+        // base: U open at top
         pts.Add(new Vector3(-r, top, 0));
         pts.Add(new Vector3(-r, midY, 0));
 
-        // bottom semicircle, centre at (0, midY), angles π -> 2π
         for (int i = 0; i <= segs; i++)
         {
             float t = Mathf.Lerp(Mathf.PI, 2f * Mathf.PI, (float)i / segs);
@@ -168,43 +242,21 @@ public class UnitSymbolView : MonoBehaviour
             pts.Add(new Vector3(x, y, 0));
         }
 
-        // right vertical: mid -> top
         pts.Add(new Vector3(r, midY, 0));
         pts.Add(new Vector3(r, top, 0));
 
-        // 2) If this is the AIR symbol, flip it vertically.
         if (inverted)
         {
             for (int i = 0; i < pts.Count; i++)
             {
                 var p = pts[i];
-                p.y = -p.y;          // mirror over horizontal axis
+                p.y = -p.y;
                 pts[i] = p;
             }
         }
 
-        // 3) Push to LineRenderer
         lineRenderer.loop = false;
         lineRenderer.positionCount = pts.Count;
         lineRenderer.SetPositions(pts.ToArray());
     }
-
-
-
-    private void UpdateLineThickness()
-    {
-        if (lineRenderer == null) return;
-
-        // In edit mode (no camera), just use base thickness
-        if (camController == null || !Application.isPlaying)
-        {
-            lineRenderer.startWidth = lineRenderer.endWidth = lineThicknessAtBaseZoom;
-            return;
-        }
-
-        float factor = camController.Cam.orthographicSize / referenceOrthoSize;
-        lineRenderer.startWidth = lineRenderer.endWidth = lineThicknessAtBaseZoom * factor;
-    }
-
-    public UnitData Data => data;
 }

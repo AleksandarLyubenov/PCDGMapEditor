@@ -15,7 +15,7 @@ public class UnitSymbolViewEditor : Editor
         EditorGUILayout.Space();
         if (GUILayout.Button("Refresh Symbol"))
         {
-            view.Refresh();
+            //view.Refresh();
 
             // Make sure scene knows it changed
             if (!Application.isPlaying)
